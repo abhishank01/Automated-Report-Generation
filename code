@@ -1,0 +1,58 @@
+import csv
+from fpdf import FPDF
+
+# Class for generating PDF report
+class PDFReport(FPDF):
+    def header(self):
+        self.set_font('Arial', 'B', 12)
+        self.cell(200, 10, 'Automated Report Generation', ln=True, align='C')
+        self.ln(10)
+
+    def footer(self):
+        self.set_y(-15)
+        self.set_font('Arial', 'I', 8)
+        self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')
+
+    def generate_table(self, data):
+        self.set_font('Arial', '', 10)
+        for row in data:
+            self.cell(40, 10, row[0], border=1)
+            self.cell(50, 10, row[1], border=1)
+            self.cell(40, 10, row[2], border=1)
+            self.cell(60, 10, row[3], border=1)
+            self.ln()
+
+# Read data from file (example: CSV)
+def read_data_from_file(file_name):
+    with open(file_name, newline='') as csvfile:
+        reader = csv.reader(csvfile)
+        data = [row for row in reader]
+    return data
+
+# Main script to generate PDF
+def generate_report(input_file, output_pdf):
+    data = read_data_from_file(input_file)
+
+    pdf = PDFReport()
+    pdf.add_page()
+
+    # Add table headers
+    pdf.set_font('Arial', 'B', 12)
+    pdf.cell(40, 10, 'Name', border=1)
+    pdf.cell(50, 10, 'Role', border=1)
+    pdf.cell(40, 10, 'Age', border=1)
+    pdf.cell(60, 10, 'Email', border=1)
+    pdf.ln()
+
+    # Generate table from data
+    pdf.generate_table(data)
+
+    # Output the PDF
+    pdf.output(output_pdf)
+
+# Example usage
+if __name__ == "__main__":
+    input_file = '../data.csv'  # Data file (e.g., CSV file)
+    output_pdf = 'report.pdf'   # Output PDF file
+    generate_report(input_file, output_pdf)
+    print(f'Report generated: {output_pdf}')
